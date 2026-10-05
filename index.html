@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NINTAI</title>
+<meta name="description" content="NINTAI conversa contigo, descubre lo que sabes hacer y te entrega una ruta y un servicio que puedes ofrecer desde esta semana.">
+<meta property="og:title" content="NINTAI · Lo que sabes hacer vale más de lo que crees">
+<meta property="og:description" content="Inteligencia artificial que transforma tu experiencia en nuevas rutas de trabajo e ingresos.">
+<meta property="og:type" content="website">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: portada en dos columnas (mensaje + vista previa del mapa), luego bloques de problema, pasos, resultado, públicos e impacto. Una columna en móvil. */
+:root {
+  --bg: #f4f7f3;
+  --surface: #ffffff;
+  --surface-2: #e9efe7;
+  --ink: #142016;
+  --ink-2: #4a5a4c;
+  --line: #d3ddd1;
+  --accent: #1d6b35;
+  --accent-ink: #ffffff;
+  --accent-soft: #d9efdc;
+  --warm: #a15c07;
+  --warm-soft: #f8ead3;
+  --display: "Fraunces", Georgia, serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e140f; --surface: #161e17; --surface-2: #1d271e; --ink: #eef4ec; --ink-2: #a8b7a8; --line: #2b382c;
+    --accent: #8cf59a; --accent-ink: #0b130c; --accent-soft: #1d3a22; --warm: #f2b35a; --warm-soft: #3a2a12;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e140f; --surface: #161e17; --surface-2: #1d271e; --ink: #eef4ec; --ink-2: #a8b7a8; --line: #2b382c;
+  --accent: #8cf59a; --accent-ink: #0b130c; --accent-soft: #1d3a22; --warm: #f2b35a; --warm-soft: #3a2a12;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 17px/1.6 var(--body); }
+a { color: inherit; }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; line-height: 1.12; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; }
+.eyebrow { font: 500 12px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+
+/* Navegación */
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.nav .wrap { display: flex; align-items: center; gap: 24px; padding-block: 12px; }
+.marca { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.kanji { font: 600 18px var(--display); color: var(--accent); border: 1px solid var(--line); background: var(--surface); border-radius: 9px; padding: 3px 8px; }
+.marca strong { font: 600 19px var(--display); letter-spacing: .06em; }
+.nav nav { margin-left: auto; display: flex; gap: 22px; align-items: center; }
+.nav nav a { text-decoration: none; color: var(--ink-2); font-size: 15px; }
+.nav nav a:hover { color: var(--ink); }
+.btn { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font: 700 16px var(--body); border-radius: 999px; padding: 13px 22px; transition: transform .15s; }
+.btn:hover { transform: translateY(-2px); }
+.btn--main { background: var(--accent); color: var(--accent-ink); }
+.btn--line { border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+.nav .btn { padding: 9px 16px; font-size: 14.5px; }
+.nav nav a.btn--main { color: var(--accent-ink); }
+
+/* Portada */
+.hero { padding-block: 72px 56px; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 56px; align-items: center; }
+.hero h1 { font-size: clamp(40px, 6.4vw, 72px); letter-spacing: -.01em; margin: 16px 0 20px; }
+.hero h1 em { color: var(--accent); }
+.hero .lead { font-size: clamp(18px, 2.2vw, 21px); color: var(--ink-2); max-width: 54ch; }
+.acciones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.aviso { margin-top: 14px; font-size: 13.5px; color: var(--ink-2); }
+
+.preview { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 22px; display: grid; gap: 16px; box-shadow: 0 18px 50px -24px rgb(20 32 22 / .35); }
+.preview__head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.preview__head span:last-child { font: 500 11px var(--mono); color: var(--ink-2); }
+.burbuja { background: var(--surface-2); border-radius: 14px 14px 14px 4px; padding: 10px 14px; font-size: 14.5px; }
+.burbuja--yo { background: var(--accent-soft); border-radius: 14px 14px 4px 14px; justify-self: end; max-width: 85%; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 13px; padding: 5px 10px; border-radius: 999px; background: var(--accent-soft); }
+.servicio { border: 1px solid var(--accent); border-radius: 14px; padding: 14px; display: grid; gap: 4px; }
+.servicio strong { font: 600 17px var(--display); }
+.precio { font: 600 20px var(--display); color: var(--accent); font-variant-numeric: tabular-nums; }
+
+/* Secciones */
+section.bloque { padding-block: 64px; border-top: 1px solid var(--line); }
+.cabecera { display: grid; gap: 12px; margin-bottom: 32px; max-width: 720px; }
+.cabecera h2 { font-size: clamp(28px, 4vw, 42px); }
+.cabecera p { color: var(--ink-2); }
+
+.problemas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.problema { padding: 20px 0 0; border-top: 2px solid var(--ink); display: grid; gap: 8px; align-content: start; }
+.problema h3 { font-size: 20px; }
+.problema p { color: var(--ink-2); font-size: 15.5px; }
+
+.pasos { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; counter-reset: paso; }
+.paso { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: grid; gap: 8px; align-content: start; counter-increment: paso; }
+.paso::before { content: "0" counter(paso); font: 500 12px var(--mono); color: var(--accent); }
+.paso h3 { font-size: 21px; }
+.paso p { color: var(--ink-2); font-size: 15.5px; }
+.mas { margin-top: 22px; }
+.mas a { color: var(--accent); font-weight: 700; text-decoration: none; }
+.mas a:hover { text-decoration: underline; }
+
+.publicos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+.publico { border-radius: 20px; padding: 28px; display: grid; gap: 14px; align-content: start; }
+.publico--personas { background: var(--surface); border: 1px solid var(--line); }
+.publico--inst { background: var(--accent-soft); }
+.publico h3 { font-size: 26px; }
+.publico ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; color: var(--ink-2); }
+.publico .btn { justify-self: start; margin-top: 6px; }
+
+.impacto { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+.cita { font: 500 clamp(24px, 3.4vw, 36px)/1.25 var(--display); }
+.cita em { color: var(--accent); }
+.metricas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.metrica { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 4px; }
+.metrica strong { font: 500 12px var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--accent); }
+.metrica span { color: var(--ink-2); font-size: 15px; }
+
+.filosofia { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 28px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 32px; }
+.filosofia .grande { font: 600 clamp(56px, 9vw, 96px)/1 var(--display); color: var(--accent); }
+.filosofia h2 { font-size: clamp(24px, 3vw, 32px); margin-bottom: 8px; }
+.filosofia p { color: var(--ink-2); max-width: 60ch; }
+
+.cierre { text-align: center; display: grid; justify-items: center; gap: 18px; }
+.cierre h2 { font-size: clamp(30px, 4.6vw, 48px); }
+
+footer { border-top: 1px solid var(--line); padding-block: 28px 40px; color: var(--ink-2); font-size: 14.5px; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+footer a { text-decoration: none; }
+footer a:hover { color: var(--ink); }
+
+@media (max-width: 960px) {
+  .hero { grid-template-columns: minmax(0, 1fr); padding-block: 48px 40px; gap: 40px; }
+  .problemas, .pasos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .impacto { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .wrap { padding-inline: 16px; }
+  .nav nav a:not(.btn) { display: none; }
+  .problemas, .pasos, .publicos, .metricas { grid-template-columns: minmax(0, 1fr); }
+  .filosofia { grid-template-columns: minmax(0, 1fr); padding: 24px; }
+  section.bloque { padding-block: 48px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+</style>
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <a class="marca" href="/"><span class="kanji" lang="ja" aria-hidden="true">忍耐</span><strong>NINTAI</strong></a>
+      <nav aria-label="Principal">
+        <a href="como-funciona.html">Cómo funciona</a>
+        <a href="#instituciones">Para instituciones</a>
+        <a class="btn btn--main" href="https://nintai-capacidades.onrender.com">Probar gratis</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap hero">
+      <div>
+        <p class="eyebrow">Inteligencia de capacidades con IA</p>
+        <h1>Lo que sabes hacer vale <em>más de lo que crees</em>.</h1>
+        <p class="lead">NINTAI conversa contigo, descubre tus capacidades —también las que no aparecen en un CV— y te entrega una ruta clara y un servicio que puedes ofrecer desde esta semana.</p>
+        <div class="acciones">
+          <a class="btn btn--main" href="https://nintai-capacidades.onrender.com">Descubrir mis capacidades →</a>
+          <a class="btn btn--line" href="como-funciona.html">Ver cómo funciona</a>
+        </div>
+        <p class="aviso">Gratis durante el piloto. La primera carga puede tardar unos segundos.</p>
+      </div>
+
+      <div class="preview" aria-label="Ejemplo de conversación y mapa de capacidades">
+        <div class="preview__head"><span class="eyebrow">Tu mapa</span><span>ejemplo</span></div>
+        <p class="burbuja">¿A qué te has dedicado en los últimos años?</p>
+        <p class="burbuja burbuja--yo">Fui administrativa en un colegio 8 años. Armaba los horarios en Excel.</p>
+        <div class="chips">
+          <span class="chip">Planificación</span><span class="chip">Excel</span><span class="chip">Atención de personas</span><span class="chip">Eventos</span>
+        </div>
+        <div class="servicio">
+          <span class="eyebrow">Servicio que puedes ofrecer</span>
+          <strong>Orden administrativo en 2 semanas</strong>
+          <span class="precio">$60.000 – $90.000 CLP</span>
+        </div>
+      </div>
+    </div>
+
+    <section class="bloque" aria-labelledby="t-problema">
+      <div class="wrap">
+        <div class="cabecera">
+          <p class="eyebrow">El problema</p>
+          <h2 id="t-problema">Capacidades sin una ruta clara</h2>
+          <p>El trabajo cambia más rápido de lo que muchas personas alcanzan a adaptarse. No falta talento: falta un camino que lo conecte con oportunidades reales.</p>
+        </div>
+        <div class="problemas">
+          <div class="problema"><h3>No sabes qué sabes</h3><p>Pocas personas identifican qué habilidades tienen y cuáles pueden llevar a otro rol.</p></div>
+          <div class="problema"><h3>La IA cambia el trabajo</h3><p>Tareas, perfiles y formas de trabajar se transforman cada año.</p></div>
+          <div class="problema"><h3>Cursos sin dirección</h3><p>Hay mucho contenido, pero falta una ruta personal que lleve a un resultado.</p></div>
+          <div class="problema"><h3>Experiencia invisible</h3><p>Lo que has vivido no se traduce en empleo, servicios ni ingresos.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bloque" aria-labelledby="t-pasos">
+      <div class="wrap">
+        <div class="cabecera">
+          <p class="eyebrow">Cómo funciona</p>
+          <h2 id="t-pasos">De una conversación a un plan, en minutos</h2>
+        </div>
+        <ol class="pasos">
+          <li class="paso"><h3>Conversa</h3><p>El asistente te pregunta por tu experiencia, una cosa a la vez y sin pedir datos sensibles.</p></li>
+          <li class="paso"><h3>Descubre</h3><p>Identifica tus habilidades y cuáles puedes llevar a otros roles, siempre basado en lo que contaste.</p></li>
+          <li class="paso"><h3>Planifica</h3><p>Te propone rutas paso a paso: empleo, trabajo freelance o emprendimiento.</p></li>
+          <li class="paso"><h3>Ofrece</h3><p>Te entrega un micro-servicio listo para ofrecer, con entregables y un precio de referencia.</p></li>
+        </ol>
+        <p class="mas"><a href="como-funciona.html">Ver el recorrido completo, paso a paso →</a></p>
+      </div>
+    </section>
+
+    <section class="bloque" aria-labelledby="t-publicos">
+      <div class="wrap">
+        <div class="cabecera">
+          <p class="eyebrow">Para quién</p>
+          <h2 id="t-publicos">Personas que se reinventan, instituciones que las acompañan</h2>
+        </div>
+        <div class="publicos">
+          <article class="publico publico--personas">
+            <h3>Para personas</h3>
+            <ul>
+              <li>Mujeres que buscan reconversión, flexibilidad o nuevos ingresos.</li>
+              <li>Personas en transición laboral.</li>
+              <li>Freelancers y emprendedores que quieren ordenar su oferta.</li>
+            </ul>
+            <a class="btn btn--main" href="https://nintai-capacidades.onrender.com">Empezar ahora</a>
+          </article>
+          <article class="publico publico--inst" id="instituciones">
+            <h3>Para instituciones</h3>
+            <ul>
+              <li>Municipios y programas de desarrollo económico local.</li>
+              <li>Programas de empleabilidad y capacitación.</li>
+              <li>Fundaciones y organizaciones que acompañan a personas.</li>
+            </ul>
+            <p>NINTAI escala el acompañamiento con IA y entrega a cada participante una ruta personal y medible.</p>
+            <a class="btn btn--line" href="https://jocelin-portafolio.github.io/#contacto">Conversemos un piloto</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="bloque" aria-labelledby="t-impacto">
+      <div class="wrap impacto">
+        <p class="cita" id="t-impacto">La métrica final no es cuántas personas usan IA. Es <em>cuántas nuevas posibilidades</em> logran construir.</p>
+        <div class="metricas">
+          <div class="metrica"><strong>Capacidades</strong><span>Fortalezas y habilidades transferibles identificadas.</span></div>
+          <div class="metrica"><strong>Aprendizaje</strong><span>Rutas y competencias digitales desarrolladas.</span></div>
+          <div class="metrica"><strong>Oportunidades</strong><span>Empleos, servicios y emprendimientos explorados.</span></div>
+          <div class="metrica"><strong>Autonomía</strong><span>Decisiones propias y trayectorias flexibles.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bloque">
+      <div class="wrap">
+        <div class="filosofia">
+          <span class="grande" lang="ja" aria-hidden="true">忍耐</span>
+          <div>
+            <h2>Nintai: la calma en la tormenta</h2>
+            <p>En japonés, <em>nintai</em> es el coraje de seguir cuando todo cuesta y crear una nueva ruta. NINTAI convierte esa resiliencia en tecnología: acompañar a cada persona a transformar su experiencia en nuevas posibilidades.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bloque">
+      <div class="wrap cierre">
+        <h2>Descubre lo que puedes construir</h2>
+        <a class="btn btn--main" href="https://nintai-capacidades.onrender.com">Hablar con NINTAI →</a>
+        <p class="aviso">Proyecto de innovación en etapa piloto.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>© <span id="anio">2026</span> NINTAI · Tecnología para construir nuevas rutas de vida y trabajo</span>
+      <a href="como-funciona.html">Cómo funciona</a>
+    </div>
+  </footer>
+  <script>document.getElementById("anio").textContent = new Date().getFullYear();</script>
+</body>
+</html>

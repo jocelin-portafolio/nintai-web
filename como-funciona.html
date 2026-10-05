@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cómo funciona · NINTAI</title>
+<meta name="description" content="Cómo el asistente de NINTAI conversa contigo y convierte tu experiencia en un plan, paso a paso.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: un recorrido horizontal de seis estaciones con dos vueltas (bucles), un panel de detalle y secciones de apoyo. En móvil, el recorrido se vuelve vertical. */
+:root {
+  --bg: #f4f7f3;
+  --surface: #ffffff;
+  --surface-2: #e9efe7;
+  --ink: #142016;
+  --ink-2: #4a5a4c;
+  --line: #d3ddd1;
+  --accent: #1d6b35;       /* verde NINTAI */
+  --accent-soft: #d9efdc;
+  --loop: #a15c07;         /* ámbar: vueltas y controles */
+  --loop-soft: #f8ead3;
+  --display: "Fraunces", Georgia, serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e140f; --surface: #161e17; --surface-2: #1d271e; --ink: #eef4ec; --ink-2: #a8b7a8;
+    --line: #2b382c; --accent: #8cf59a; --accent-soft: #1d3a22; --loop: #f2b35a; --loop-soft: #3a2a12;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e140f; --surface: #161e17; --surface-2: #1d271e; --ink: #eef4ec; --ink-2: #a8b7a8;
+  --line: #2b382c; --accent: #8cf59a; --accent-soft: #1d3a22; --loop: #f2b35a; --loop-soft: #3a2a12;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 17px/1.6 var(--body); }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 48px 64px; display: grid; gap: 72px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.eyebrow { font: 500 12px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
+
+/* Encabezado */
+header { display: grid; gap: 18px; max-width: 760px; }
+.marca { display: flex; align-items: center; gap: 12px; }
+.kanji { font: 600 22px var(--display); color: var(--accent); border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 4px 9px; }
+header h1 { font-size: clamp(36px, 6vw, 58px); }
+header h1 em { font-style: italic; color: var(--accent); }
+.lead { font-size: clamp(18px, 2.2vw, 21px); color: var(--ink-2); max-width: 62ch; }
+
+/* Recorrido */
+.seccion { display: grid; gap: 24px; }
+.seccion > h2 { font-size: clamp(26px, 3.6vw, 36px); }
+.seccion > .sub { color: var(--ink-2); max-width: 62ch; }
+
+.recorrido-wrap { position: relative; padding-top: 64px; }
+.arcos { position: absolute; inset: 0 0 auto 0; height: 64px; width: 100%; overflow: visible; }
+.arcos path { fill: none; stroke: var(--loop); stroke-width: 2; stroke-dasharray: 5 5; vector-effect: non-scaling-stroke; }
+.arco-label { position: absolute; top: 0; transform: translateX(-50%); font: 500 11.5px var(--mono); color: var(--loop); background: var(--loop-soft); border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+
+.recorrido { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; counter-reset: paso; }
+.estacion { position: relative; }
+.estacion button {
+  width: 100%; height: 100%; text-align: left; cursor: pointer; font: inherit; color: inherit;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px 14px 18px;
+  display: grid; gap: 8px; align-content: start; transition: border-color .15s, transform .15s;
+}
+.estacion button:hover { border-color: var(--accent); transform: translateY(-2px); }
+.estacion[aria-current="step"] button { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.estacion:not(:last-child)::after {
+  content: ""; position: absolute; top: 34px; right: -12px; width: 10px; height: 10px;
+  border-top: 2px solid var(--accent); border-right: 2px solid var(--accent); transform: rotate(45deg);
+}
+.num { font: 500 12px var(--mono); color: var(--accent); }
+.icono { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
+.icono svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.estacion--control .icono { background: var(--loop-soft); color: var(--loop); }
+.estacion h3 { font-size: 19px; }
+.estacion .corto { font-size: 14.5px; color: var(--ink-2); line-height: 1.45; }
+.vuelta { display: none; font: 500 11.5px var(--mono); color: var(--loop); }
+
+/* Panel de detalle */
+.detalle { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 28px; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 28px; }
+.detalle h3 { font-size: 26px; margin-bottom: 10px; }
+.detalle .texto { color: var(--ink-2); }
+.columna { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.caja { border-radius: 14px; padding: 16px 18px; background: var(--surface-2); }
+.caja .eyebrow { display: block; margin-bottom: 6px; }
+.caja--ejemplo { background: var(--accent-soft); }
+.caja--ejemplo p { font-family: var(--display); font-size: 18px; }
+.nav-detalle { display: flex; gap: 10px; margin-top: 6px; }
+.nav-detalle button { font: 700 14px var(--body); color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+.nav-detalle button:hover:not(:disabled) { border-color: var(--accent); }
+.nav-detalle button:disabled { opacity: .4; cursor: default; }
+
+/* Piezas */
+.piezas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.pieza { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px; display: grid; gap: 8px; align-content: start; }
+.pieza .como { font: 500 12px var(--mono); color: var(--accent); letter-spacing: .04em; }
+.pieza h3 { font-size: 21px; }
+.pieza p { color: var(--ink-2); font-size: 15.5px; }
+
+/* Resultado */
+.resultado { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.tarjeta { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font-size: 14px; padding: 6px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--ink); }
+.chip small { color: var(--ink-2); }
+.ruta { margin: 0; padding-left: 22px; color: var(--ink-2); display: grid; gap: 4px; }
+.servicio { border-color: var(--accent); }
+.precio { font: 600 26px var(--display); color: var(--accent); font-variant-numeric: tabular-nums; }
+.nota { font-size: 13.5px; color: var(--ink-2); }
+
+/* Cuidados */
+.cuidados { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.lista li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; }
+.marca-si, .marca-no { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; font: 700 15px var(--body); }
+.marca-si { background: var(--accent-soft); color: var(--accent); }
+.marca-no { background: var(--loop-soft); color: var(--loop); }
+.lista strong { display: block; }
+.lista span { color: var(--ink-2); font-size: 15.5px; }
+
+footer { border-top: 1px solid var(--line); padding-top: 24px; display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; justify-content: space-between; color: var(--ink-2); font-size: 15px; }
+footer a { color: var(--accent); font-weight: 700; text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+.enlaces { display: flex; flex-wrap: wrap; gap: 20px; }
+
+/* Responsive */
+@media (max-width: 980px) {
+  .recorrido { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 22px; }
+  .estacion:nth-child(3)::after { display: none; }
+  .arcos, .arco-label { display: none; }
+  .recorrido-wrap { padding-top: 0; }
+  .vuelta { display: block; }
+  .piezas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 680px) {
+  .wrap { gap: 56px; padding-block: 32px 48px; padding-inline: 16px; }
+  .recorrido { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .estacion::after { display: none; }
+  .estacion button { grid-template-columns: 36px minmax(0, 1fr); column-gap: 12px; }
+  .estacion button > :not(.icono) { grid-column: 2; }
+  .estacion .icono { grid-row: 1 / span 4; }
+  .detalle, .resultado, .cuidados, .piezas { grid-template-columns: minmax(0, 1fr); }
+  .detalle { padding: 20px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <a class="marca" href="/" style="text-decoration:none;color:inherit"><span class="kanji" lang="ja" aria-hidden="true">忍耐</span><span class="eyebrow">← Volver a NINTAI</span></a>
+    <h1>Cómo piensa el asistente de <em>NINTAI</em></h1>
+    <p class="lead">Un asistente con inteligencia artificial que conversa contigo, descubre lo que sabes hacer y lo convierte en un plan concreto para generar ingresos. Este mapa muestra, paso a paso, qué hace y cómo se asegura de hacerlo bien.</p>
+  </header>
+
+  <section class="seccion" aria-labelledby="t-recorrido">
+    <p class="eyebrow">El recorrido</p>
+    <h2 id="t-recorrido">De una conversación a un plan, en seis pasos</h2>
+    <p class="sub">Toca cada paso para ver qué ocurre. Las líneas ámbar marcan las dos vueltas en las que el asistente se detiene, revisa y vuelve atrás si hace falta.</p>
+
+    <div class="recorrido-wrap">
+      <svg class="arcos" viewBox="0 0 600 64" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M250 64 C 250 8, 50 8, 50 64"/>
+        <path d="M450 64 C 450 22, 350 22, 350 64"/>
+      </svg>
+      <span class="arco-label" style="left:25%">¿falta información? vuelve a preguntar</span>
+      <span class="arco-label" style="left:66.6%; top:18px">¿algo no cuadra? se corrige</span>
+
+      <ol class="recorrido" id="recorrido"></ol>
+    </div>
+
+    <article class="detalle" id="detalle" aria-live="polite">
+      <div class="columna">
+        <span class="eyebrow" id="d-num"></span>
+        <h3 id="d-titulo"></h3>
+        <p class="texto" id="d-texto"></p>
+        <div class="nav-detalle">
+          <button type="button" id="anterior">← Anterior</button>
+          <button type="button" id="siguiente">Siguiente →</button>
+        </div>
+      </div>
+      <div class="columna">
+        <div class="caja caja--ejemplo"><span class="eyebrow">Ejemplo</span><p id="d-ejemplo"></p></div>
+        <div class="caja"><span class="eyebrow">Por dentro</span><p id="d-dentro"></p></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="seccion" aria-labelledby="t-piezas">
+    <p class="eyebrow">Las piezas</p>
+    <h2 id="t-piezas">Funciona como un pequeño equipo de atención</h2>
+    <p class="sub">Un agente de IA no es solo un chat: es un modelo que razona, rodeado de reglas, formularios y controles que le dicen qué puede hacer y cómo.</p>
+    <div class="piezas">
+      <div class="pieza"><span class="como">Como el profesional que atiende</span><h3>La inteligencia artificial</h3><p>Escucha, hace preguntas y razona sobre lo que cuentas. Es el modelo Claude, de Anthropic.</p></div>
+      <div class="pieza"><span class="como">Como el manual de atención</span><h3>Las instrucciones</h3><p>Le indican cómo conversar: con calidez, una pregunta a la vez, sin pedir datos sensibles y sin inventar.</p></div>
+      <div class="pieza"><span class="como">Como un formulario oficial</span><h3>La herramienta del mapa</h3><p>Una plantilla fija que el asistente debe completar: perfil, habilidades, rutas y servicio. Así el resultado siempre tiene la misma forma.</p></div>
+      <div class="pieza"><span class="como">Como control de calidad</span><h3>El revisor automático</h3><p>Antes de mostrarte el mapa, revisa que esté completo y coherente. Si algo falla, el asistente lo corrige.</p></div>
+      <div class="pieza"><span class="como">Como las notas de la sesión</span><h3>La memoria de la conversación</h3><p>Recuerda lo que contaste durante la conversación para no repetir preguntas. Se borra al cerrar.</p></div>
+      <div class="pieza"><span class="como">Como el reglamento</span><h3>Los límites</h3><p>Un máximo de pasos por respuesta, de mensajes por conversación y de gasto diario, para que funcione de forma segura.</p></div>
+    </div>
+  </section>
+
+  <section class="seccion" aria-labelledby="t-resultado">
+    <p class="eyebrow">El resultado</p>
+    <h2 id="t-resultado">Lo que recibe la persona</h2>
+    <p class="sub">Ejemplo real de la demo: una administrativa con 8 años de experiencia en un colegio que busca trabajar desde casa 20 horas a la semana.</p>
+    <div class="resultado">
+      <div class="tarjeta">
+        <span class="eyebrow">Habilidades con evidencia</span>
+        <div class="chips">
+          <span class="chip">Planificación con restricciones <small>· avanzado</small></span>
+          <span class="chip">Excel y planillas <small>· intermedio</small></span>
+          <span class="chip">Atención de apoderados <small>· avanzado</small></span>
+          <span class="chip">Gestión de eventos <small>· intermedio</small></span>
+          <span class="chip">Trámites digitales <small>· intermedio</small></span>
+        </div>
+        <span class="eyebrow">Ruta principal · 4 semanas</span>
+        <ol class="ruta">
+          <li>Definir un paquete de servicio con precio</li>
+          <li>Armar una planilla demo de control de gastos</li>
+          <li>Ofrecerlo a 3 pymes conocidas</li>
+          <li>Pedir un testimonio al primer cliente</li>
+        </ol>
+      </div>
+      <div class="tarjeta servicio">
+        <span class="eyebrow">Micro-servicio que puede ofrecer</span>
+        <h3>Orden administrativo en 2 semanas</h3>
+        <p class="nota">Planilla de ingresos y gastos, calendario de pagos y una sesión para enseñar a usarlos.</p>
+        <p class="precio">$60.000 – $90.000 CLP</p>
+        <p class="nota">Para pymes y emprendedoras del barrio · Se vende por WhatsApp y grupos locales.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion" aria-labelledby="t-cuidados">
+    <p class="eyebrow">Los cuidados</p>
+    <h2 id="t-cuidados">Qué hace y qué no hace</h2>
+    <div class="cuidados">
+      <div class="tarjeta">
+        <ul class="lista">
+          <li><span class="marca-si" aria-hidden="true">✓</span><div><strong>Basa todo en tu relato</strong><span>Cada habilidad del mapa cita algo que contaste. Si no hay evidencia, no la agrega.</span></div></li>
+          <li><span class="marca-si" aria-hidden="true">✓</span><div><strong>Se revisa antes de responder</strong><span>Un control automático verifica el mapa y le pide corregirlo si algo no cuadra.</span></div></li>
+          <li><span class="marca-si" aria-hidden="true">✓</span><div><strong>Te deja reformular</strong><span>Si un mensaje no se puede procesar, lo descarta y te pide contarlo de otra forma.</span></div></li>
+        </ul>
+      </div>
+      <div class="tarjeta">
+        <ul class="lista">
+          <li><span class="marca-no" aria-hidden="true">✕</span><div><strong>No pide datos sensibles</strong><span>Ni RUT, ni dirección, ni datos bancarios. Si los compartes, no los repite ni los guarda en el mapa.</span></div></li>
+          <li><span class="marca-no" aria-hidden="true">✕</span><div><strong>No decide por ti</strong><span>Propone rutas y un servicio; tú eliges qué hacer con ellos.</span></div></li>
+          <li><span class="marca-no" aria-hidden="true">✕</span><div><strong>No guarda tu conversación</strong><span>La memoria dura solo mientras conversas; al cerrar, se borra.</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>NINTAI · Tecnología para construir nuevas rutas de vida y trabajo.</p>
+    <div class="enlaces">
+      <a href="https://nintai-capacidades.onrender.com">Probar el asistente ↗</a>
+      <a href="/">Inicio</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+const ICONOS = {
+  conversa: '<path d="M4 5h16v10H9l-5 4z"/>',
+  entiende: '<circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/>',
+  decide: '<path d="M12 3v6M12 9l-6 6M12 9l6 6M6 15v4M18 15v4"/>',
+  arma: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+  revisa: '<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="m9 12 2 2 4-4"/>',
+  entrega: '<path d="M4 12l5 5L20 6"/>',
+};
+
+const PASOS = [
+  { id: "conversa", titulo: "Conversa", corto: "Te pregunta por tu experiencia, una cosa a la vez.",
+    texto: "El asistente abre con una pregunta sencilla y sigue con otras según lo que respondes. Busca experiencias concretas: trabajos, cuidados de familiares, emprendimientos, voluntariados o cosas que otras personas te piden.",
+    ejemplo: "«¿A qué te has dedicado en los últimos años?»",
+    dentro: "La inteligencia artificial sigue un manual de instrucciones: calidez, una sola pregunta por mensaje y nunca pedir datos sensibles." },
+  { id: "entiende", titulo: "Entiende", corto: "Descubre habilidades, incluso las que no están en un CV.",
+    texto: "Mientras conversan, el asistente traduce lo que cuentas en habilidades con nombre. Muchas capacidades valiosas no aparecen en un currículum: organizar, negociar, enseñar o administrar el presupuesto de una casa.",
+    ejemplo: "«Armaba los horarios en Excel» se convierte en «Planificación con restricciones».",
+    dentro: "Cada habilidad debe apoyarse en algo que la persona dijo. Si no hay evidencia, no entra en el mapa." },
+  { id: "decide", titulo: "Decide", corto: "¿Ya sabe lo suficiente? Si no, vuelve a preguntar.", control: true,
+    vuelta: "↺ Si falta información, vuelve al paso 01",
+    texto: "Después de cada respuesta, el asistente evalúa si ya conoce al menos tres experiencias concretas y tu objetivo. Si falta algo, vuelve a preguntar. Normalmente le bastan entre tres y seis preguntas, y puedes pedirle el mapa cuando quieras.",
+    ejemplo: "«Última pregunta: ¿qué te gustaría lograr y cuánto tiempo tienes disponible?»",
+    dentro: "Esta es la parte «agente»: no sigue un guion fijo, sino que decide el siguiente paso según lo que va descubriendo." },
+  { id: "arma", titulo: "Arma el mapa", corto: "Completa una plantilla fija con tu plan.",
+    texto: "Con la información reunida, el asistente completa una plantilla con secciones fijas: tu perfil, tus habilidades, lo que puedes llevar a otros roles, rutas paso a paso y un micro-servicio con precio de referencia en pesos chilenos.",
+    ejemplo: "Micro-servicio: «Orden administrativo en 2 semanas», entre $60.000 y $90.000 CLP.",
+    dentro: "El asistente usa una «herramienta», un formulario con formato estricto. Así el resultado siempre tiene la misma estructura." },
+  { id: "revisa", titulo: "Revisa", corto: "Un control automático verifica el mapa.", control: true,
+    vuelta: "↺ Si algo no cuadra, vuelve al paso 04",
+    texto: "Antes de mostrarte nada, un revisor automático comprueba el mapa: que tenga al menos tres habilidades, que el precio mínimo no supere al máximo y que no incluya datos de más. Si algo falla, le devuelve el error al asistente y este lo corrige solo.",
+    ejemplo: "«Faltan habilidades» → el asistente agrega las que había detectado y vuelve a enviar el mapa.",
+    dentro: "Es un control de calidad hecho con código, no con IA: siempre aplica las mismas reglas." },
+  { id: "entrega", titulo: "Entrega", corto: "Ves tu mapa y el primer paso concreto.",
+    texto: "El mapa aparece en tu pantalla, ordenado y listo para usar. El asistente cierra con un mensaje breve que destaca una fortaleza y el primer paso que puedes dar esta misma semana.",
+    ejemplo: "«Tu gran fortaleza es ordenar lo complejo. El primer paso: ofrecer tu servicio a tres pymes de tu barrio.»",
+    dentro: "La conversación completa toma unos pocos minutos y tiene límites de uso para mantener el servicio seguro y sostenible." },
+];
+
+const lista = document.getElementById("recorrido");
+const $ = (id) => document.getElementById(id);
+let actual = 0;
+
+PASOS.forEach((p, i) => {
+  const li = document.createElement("li");
+  li.className = "estacion" + (p.control ? " estacion--control" : "");
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.id = "paso-" + p.id;
+  btn.innerHTML =
+    `<span class="icono" aria-hidden="true"><svg viewBox="0 0 24 24">${ICONOS[p.id]}</svg></span>` +
+    `<span class="num">0${i + 1}</span><h3></h3><span class="corto"></span>` +
+    (p.vuelta ? `<span class="vuelta"></span>` : "");
+  btn.querySelector("h3").textContent = p.titulo;
+  btn.querySelector(".corto").textContent = p.corto;
+  if (p.vuelta) btn.querySelector(".vuelta").textContent = p.vuelta;
+  btn.addEventListener("click", () => mostrar(i, true));
+  li.append(btn);
+  lista.append(li);
+});
+
+function mostrar(i, desdeClic) {
+  actual = i;
+  const p = PASOS[i];
+  $("d-num").textContent = `Paso 0${i + 1} de 06${p.control ? " · control" : ""}`;
+  $("d-titulo").textContent = p.titulo;
+  $("d-texto").textContent = p.texto;
+  $("d-ejemplo").textContent = p.ejemplo;
+  $("d-dentro").textContent = p.dentro;
+  [...lista.children].forEach((li, k) => { if (k === i) li.setAttribute("aria-current", "step"); else li.removeAttribute("aria-current"); });
+  $("anterior").disabled = i === 0;
+  $("siguiente").disabled = i === PASOS.length - 1;
+  if (desdeClic && window.matchMedia("(max-width: 680px)").matches) {
+    $("detalle").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+}
+
+$("anterior").addEventListener("click", () => mostrar(Math.max(0, actual - 1)));
+$("siguiente").addEventListener("click", () => mostrar(Math.min(PASOS.length - 1, actual + 1)));
+mostrar(0, false);
+</script>
+</body>
+</html>
